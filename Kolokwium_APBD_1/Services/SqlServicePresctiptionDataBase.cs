@@ -83,7 +83,40 @@ namespace Kolokwium_APBD_1.Services
 
         public IActionResult enrollPrescription(EnrollPrescriptionRequest request)
         {
-            throw new NotImplementedException();
+            using (var client = new SqlConnection(databaseURL))
+            using (var com = new SqlCommand())
+            {
+                com.Connection = client;
+                client.Open();
+                com.Transaction = client.BeginTransaction();
+                SqlDataReader db;
+                
+                try
+                {
+                    if(request.DueDate < request.Date) return new BadRequestResult();
+                    
+                    com.CommandText = "SELECT MAX(IdPrescription) FROM Prescription";
+                    db = com.ExecuteReader();
+                    int maxId = Convert.ToInt32(db[0].ToString()) + 1;
+                    db.Close();
+
+                    com.CommandText = "INSERT INTO Prescription values (@id, @date, @dueDate, @idPat, @idDoc)";
+                    com.Parameters.AddWithValue("id", maxId);
+                    com.Parameters.AddWithValue("date", request.Date);
+                    com.Parameters.AddWithValue("dueDate", request.DueDate);
+                    com.Parameters.AddWithValue("idPat", request.IdPatient);
+                    com.Parameters.AddWithValue("idDoc", request.IdDoctor);
+                    com.ExecuteNonQuery();
+
+                    return new OkObjectResult(maxId);
+                    
+                }
+                catch (SqlException e)
+                {
+                    com.Transaction.Rollback();
+                    return new BadRequestResult();
+                }
+            }
         }
         
     }
