@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Runtime.InteropServices.ComTypes;
 using Kolokwium_APBD_1.DTOs.Request;
 using Kolokwium_APBD_1.DTOs.Response;
 using Kolokwium_APBD_1.Properties.Model;
@@ -98,13 +99,13 @@ namespace Kolokwium_APBD_1.Services
                     
                     com.CommandText = "SELECT MAX(IdPrescription) FROM Prescription";
                     db = com.ExecuteReader();
+                    db.Read();
                     int maxId = Convert.ToInt32(db[0].ToString()) + 1;
                     db.Close();
 
                     Console.WriteLine(request.Date);
 
-                    com.CommandText = "INSERT INTO Prescription values (@id, @date, @dueDate, @idPat, @idDoc)";
-                    com.Parameters.AddWithValue("id", maxId);
+                    com.CommandText = "INSERT INTO Prescription values (@date,@dueDate,@idPat,@idDoc)";
                     com.Parameters.AddWithValue("date", request.Date);
                     com.Parameters.AddWithValue("dueDate", request.DueDate);
                     com.Parameters.AddWithValue("idPat", request.IdPatient);
