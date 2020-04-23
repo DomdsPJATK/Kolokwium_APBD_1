@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Kolokwium_APBD_1.DTOs.Request;
+using Kolokwium_APBD_1.DTOs.Response;
 using Kolokwium_APBD_1.Properties.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -100,6 +101,8 @@ namespace Kolokwium_APBD_1.Services
                     int maxId = Convert.ToInt32(db[0].ToString()) + 1;
                     db.Close();
 
+                    Console.WriteLine(request.Date);
+
                     com.CommandText = "INSERT INTO Prescription values (@id, @date, @dueDate, @idPat, @idDoc)";
                     com.Parameters.AddWithValue("id", maxId);
                     com.Parameters.AddWithValue("date", request.Date);
@@ -108,7 +111,14 @@ namespace Kolokwium_APBD_1.Services
                     com.Parameters.AddWithValue("idDoc", request.IdDoctor);
                     com.ExecuteNonQuery();
 
-                    return new OkObjectResult(maxId);
+                    return new OkObjectResult(new PrescriptionEnrollResponse()
+                    {
+                        IdPrescription = maxId,
+                        Date = request.Date,
+                        DueDate = request.DueDate,
+                        IdPatient = request.IdPatient,
+                        IdDoctor = request.IdDoctor
+                    });
                     
                 }
                 catch (SqlException e)

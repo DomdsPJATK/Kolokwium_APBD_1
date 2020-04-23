@@ -22,7 +22,7 @@ namespace Kolokwium_APBD_1.Controllers
         }
 
         [HttpPost("enrollments")]
-        public IActionResult enrollPrecription(EnrollPrescriptionRequest request)
+        public IActionResult enrollPrescription(EnrollPrescriptionRequest request)
         {
             return _service.enrollPrescription(request);
         }
